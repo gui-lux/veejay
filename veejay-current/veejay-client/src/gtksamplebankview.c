@@ -186,6 +186,9 @@ static int gvr_sample_bank_footer_height(
 static int gvr_sample_bank_cell_side(
         const GvrSampleBankFontMetrics *metrics)
 {
+    if(extra_small_possible) {
+        return 90;
+    }
     return MAX(120, 84 + gvr_sample_bank_footer_height(metrics));
 }
 
@@ -435,13 +438,18 @@ static void gvr_sample_bank_view_layout(GvrSampleBankView *view, int width, int 
     if(grid_w <= 2 || grid_h <= 2)
         return;
 
-    columns = grid_w / target_cell;
-    rows = grid_h / target_cell;
-
-    if(columns < base_columns)
+    if(extra_small_possible) {
         columns = base_columns;
-    if(rows < base_rows)
         rows = base_rows;
+    } else {
+        columns = grid_w / target_cell;
+        rows = grid_h / target_cell;
+
+        if(columns < base_columns)
+            columns = base_columns;
+        if(rows < base_rows)
+            rows = base_rows;
+    }
 
     while(columns * rows > GVR_SAMPLE_BANK_VISIBLE_MAX && rows > base_rows)
         rows--;
@@ -1199,7 +1207,7 @@ void gvr_sample_bank_view_set_layout(GtkWidget *widget, int columns, int rows)
     if(!GVR_IS_SAMPLE_BANK_VIEW(widget))
         return;
 
-    if(columns < 1 || rows < 1 || columns * rows != GVR_SAMPLE_BANK_SLOTS) {
+    if(columns < 1 || rows < 1 || columns * rows > GVR_SAMPLE_BANK_SLOTS) {
         columns = GVR_SAMPLE_BANK_COLUMNS;
         rows = GVR_SAMPLE_BANK_ROWS;
     }

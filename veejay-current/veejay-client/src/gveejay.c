@@ -71,6 +71,7 @@ static gint arg_sample_pages = 0;
 static gboolean arg_version = FALSE;
 static gchar *arg_style = NULL;
 static gboolean arg_smallaspossible = FALSE;
+static gboolean arg_extrasmall = FALSE;
 static gboolean arg_fasterui = FALSE;
 static gchar *help_text = NULL;
 
@@ -262,12 +263,15 @@ gint vj_gui_command_line (GApplication            *app,
                        n_tracks);
     }
 
+    if(arg_extrasmall)
+        arg_smallaspossible = TRUE;
+
     if( arg_style ) {
-        vj_gui_set_stylesheet(arg_style,arg_smallaspossible);
+        vj_gui_set_stylesheet(arg_style,arg_smallaspossible,arg_extrasmall);
         g_free(arg_style);
         arg_style = NULL;
     } else {
-        vj_gui_set_stylesheet(arg_style,arg_smallaspossible);
+        vj_gui_set_stylesheet(arg_style,arg_smallaspossible,arg_extrasmall);
     }
 
     if( err )
@@ -295,6 +299,19 @@ int main(int argc, char **argv)
     GtkApplication *app;
     int status;
 
+    {
+        int i;
+        for(i = 1; i < argc; i++) {
+            if(strcmp(argv[i], "-Xs") == 0) {
+                arg_extrasmall = TRUE;
+                for(int j = i; j < argc - 1; j++)
+                    argv[j] = argv[j + 1];
+                argc--;
+                i--;
+            }
+        }
+    }
+
     app = gtk_application_new ("org.veejay.reloaded", G_APPLICATION_HANDLES_COMMAND_LINE|G_APPLICATION_NON_UNIQUE);
     g_signal_connect (app, "activate", G_CALLBACK (vj_gui_activate), NULL);
     g_signal_connect (app, "startup", G_CALLBACK (vj_gui_startup), NULL);
@@ -320,6 +337,7 @@ int main(int argc, char **argv)
     {"tracks",      'X', 0, G_OPTION_ARG_INT, &arg_tracks,"Set extra multitrack slots beyond current track 0 (default: 3).", "N"},
     {"theme",       't', 0, G_OPTION_ARG_FILENAME, &arg_style, "Use \"system\" for the default theme, or pass a stylesheet filename.", NULL },
     {"small-as-possible",'S',0,G_OPTION_ARG_NONE,&arg_smallaspossible, "Create the smallest possible UI.",NULL},
+    {"extra-small", 0, 0, G_OPTION_ARG_NONE, &arg_extrasmall, "Create an even more compact UI layout than -S, at the cost of some horizontal scrolling (same as -Xs).", NULL},
 #if GTK_CHECK_VERSION(3,22,30)
     {"faster-ui",   'f', 0, G_OPTION_ARG_NONE, &arg_fasterui, "Hide FX parameter sliders instead of disabling them to reduce CPU usage (GTK3 3.22.30).", NULL},
 #endif

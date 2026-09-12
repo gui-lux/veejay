@@ -79,6 +79,24 @@ Load a CSS stylesheet. Use \fBsystem\fR to use the system default theme.
 .BR -S , " --small-as-possible"
 Create the smallest possible UI layout.
 .TP
+.BR -Xs , " --extra-small"
+Create an even more compact UI layout than
+.BR -S .
+This layout narrows the sample bank and several secondary control rows and
+moves a handful of transport buttons next to the live preview, trading
+horizontal scrolling on the FX parameter panel for a smaller minimum window
+size.
+.BR -Xs
+implies
+.BR -S .
+Note that
+.B \-Xs
+is parsed specially and cannot be combined with other short options in the
+same token (for example
+.BR \-aXs );
+pass it as its own argument, or use
+.BR \-\-extra\-small .
+.TP
 .BR -f , " --faster-ui"
 Hide unused FX parameter sliders instead of disabling them. This reduces GTK
 CPU usage on GTK 3.22.30 and newer builds. This option is available only when
@@ -1144,6 +1162,9 @@ Connect to a remote server on a custom port:
 .TP
 Start with quarter-size preview and a small UI:
 .B gveejay-reloaded --preview 3 --small-as-possible
+.TP
+Start with the most compact UI layout, on a small screen:
+.B gveejay-reloaded -Xs
 .TP
 Use the system GTK theme instead of Reloaded's CSS:
 .B gveejay-reloaded --theme system

@@ -245,6 +245,11 @@ static int gvr_mt_clampi(int value, int lo, int hi)
     return value < lo ? lo : (value > hi ? hi : value);
 }
 
+static int gvr_mt_header_width(void)
+{
+    return extra_small_possible ? 220 : GVR_MT_HEADER_WIDTH;
+}
+
 static void gvr_mt_add_class(GtkWidget *widget, const char *name)
 {
     GtkStyleContext *context = gtk_widget_get_style_context(widget);
@@ -3405,7 +3410,7 @@ static void gvr_mt_build_lane_header(GvrMultiTrackEdit *view, int track)
     lane->row_event = gtk_event_box_new();
     gtk_event_box_set_visible_window(GTK_EVENT_BOX(lane->row_event), TRUE);
     gtk_widget_set_size_request(lane->row_event,
-                                GVR_MT_HEADER_WIDTH,
+                                gvr_mt_header_width(),
                                 GVR_MT_LANE_HEIGHT);
     gvr_mt_add_class(lane->row_event, "multi-track-header");
     g_object_set_data(G_OBJECT(lane->row_event),
@@ -4002,12 +4007,12 @@ static void gvr_multi_track_edit_init(GvrMultiTrackEdit *view)
                                    GTK_POLICY_NEVER,
                                    GTK_POLICY_NEVER);
     gtk_widget_set_size_request(view->header_scroll,
-                                GVR_MT_HEADER_WIDTH,
+                                gvr_mt_header_width(),
                                 260);
     view->header_content = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     ruler_spacer = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_widget_set_size_request(ruler_spacer,
-                                GVR_MT_HEADER_WIDTH,
+                                gvr_mt_header_width(),
                                 GVR_MT_RULER_HEIGHT);
     gvr_mt_add_class(ruler_spacer, "multi-track-ruler-spacer");
     GtkWidget *instance_label =
@@ -4026,7 +4031,7 @@ static void gvr_multi_track_edit_init(GvrMultiTrackEdit *view)
     view->timeline_scroll = gtk_scrolled_window_new(NULL,
                                                      view->vertical_adjustment);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(view->timeline_scroll),
-                                   GTK_POLICY_NEVER,
+                                   extra_small_possible ? GTK_POLICY_AUTOMATIC : GTK_POLICY_NEVER,
                                    GTK_POLICY_AUTOMATIC);
     gtk_widget_set_hexpand(view->timeline_scroll, TRUE);
     gtk_widget_set_vexpand(view->timeline_scroll, TRUE);
